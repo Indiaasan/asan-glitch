@@ -39,19 +39,6 @@ app.get("/status", function (req, res) {
   });
 });
 
-//启动web
-app.get("/start", (req, res) => {
-  let cmdStr =
-    "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
-  exec(cmdStr, function (err, stdout, stderr) {
-    if (err) {
-      res.send("命令行执行错误：" + err);
-    } else {
-      res.send("命令行执行结果：" + "启动成功!");
-    }
-  });
-});
-
 
 // 获取系统监听端口
 app.get("/listen", function (req, res) {
@@ -140,6 +127,21 @@ function keep_web_alive() {
   });
 */
 
+function start_web () {
+    exec(
+        "curl -u admin:password https://你反代后的域名/start",
+        function (err, stdout, stderr) {
+            if (err) {
+                console.log("保活-调起web-命令行执行错误!!!!!!!!!:" + err);
+            } else {
+                console.log("保活-调起web-命令行执行成功!!!!!!!!!");
+            }
+        }
+    );
+}
+
+setInterval(start_web, 5 * 60000);
+  
   // 2.请求服务器进程状态列表，若web没在运行，则调起
   exec("pgrep -laf web.js", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
